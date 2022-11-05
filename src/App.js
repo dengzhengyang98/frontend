@@ -28,6 +28,15 @@ gapi.load("client:auth2", () => {
 
 function App() {
   const [user, setUser] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+
+  const addFavorite = (movieId) => {
+    setFavorites([...favorites, movieId])
+  }
+
+  const deleteFavorite = (movieId) => {
+    setFavorites(favorites.filter(f => f !== movieId))
+  }
 
   useEffect(() => {
     let loginData = JSON.parse(localStorage.getItem("login"));
@@ -71,10 +80,18 @@ function App() {
 
         <Routes>
           <Route exact path={"/"} element={
-            <MoviesList />}
+            <MoviesList 
+              user={ user }
+              addFavorite={ addFavorite }
+              deleteFavorite={ deleteFavorite }
+              favorites={favorites}/>}
             />
           <Route exact path={"/movies"} element={
-            <MoviesList />}
+            <MoviesList 
+              user={ user }
+              addFavorite={ addFavorite }
+              deleteFavorite={ deleteFavorite }
+              favorites={favorites}/>}
             />
           <Route exact path={"/movies/:id"} element={
             <Movie user = {user} />}
