@@ -14,6 +14,8 @@ import MoviesList from "./component/MoviesList.js"
 import Movie from "./component/Movie.js"
 import AddReview from "./component/AddReview.js"
 
+import FavoritesDataService from './service/favorites.js'
+
 import './App.css';
 
 const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
@@ -31,7 +33,17 @@ function App() {
   const [favorites, setFavorites] = useState([]);
 
   const addFavorite = (movieId) => {
-    setFavorites([...favorites, movieId])
+    let data = {
+      movie_id: movieId,
+      user_id: user.googleId
+    }
+    FavoritesDataService.addFavorite(data)
+      .then(response => {
+        setFavorites([...favorites, movieId])
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }
 
   const deleteFavorite = (movieId) => {

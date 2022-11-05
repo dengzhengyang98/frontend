@@ -13,6 +13,7 @@ function Login({ setUser }) {
           ...tokenData
         }
         setUser(loginData);
+        console.log(loginData)
         localStorage.setItem("login", JSON.stringify(loginData));
       };
 
