@@ -1,5 +1,5 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, Link } from "react-router-dom";
 import { gapi } from "gapi-script";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -31,23 +31,51 @@ gapi.load("client:auth2", () => {
 function App() {
   const [user, setUser] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [doSaveFaves, setDoSaveFaves] = useState(false);
 
-  const addFavorite = (movieId) => {
-    let data = {
-      movie_id: movieId,
-      user_id: user.googleId
-    }
-    FavoritesDataService.addFavorite(data)
+  const retrieveFavorites = useCallback(() => {
+    FavoritesDataService.getAll(user.googleId)
       .then(response => {
-        setFavorites([...favorites, movieId])
+        setFavorites(response.data.favorites);
       })
       .catch(e => {
         console.log(e)
       })
+  }, [user]);
+
+  const saveFovorite = useCallback(() => {
+    var data = {
+      _id: user.googleId,
+      favorites: favorites
+    }
+
+    FavoritesDataService.updateFavoritesList(data)
+      .catch(e => {
+        console.log(e)
+      })
+  }, [favorites, user]);
+
+  useEffect(() => {
+    if (user && doSaveFaves) {
+      saveFovorite();
+      setDoSaveFaves(false);
+    }
+  }, [user, favorites, setFavorites, doSaveFaves])
+
+  useEffect(() => {
+    if (user) {
+      retrieveFavorites();
+    }
+  }, [user, retrieveFavorites]);
+
+  const addFavorite = (movieId) => {
+    setDoSaveFaves(true);
+    setFavorites([...favorites, movieId])  
   }
 
   const deleteFavorite = (movieId) => {
-    setFavorites(favorites.filter(f => f !== movieId))
+    setDoSaveFaves(true);
+    setFavorites(favorites.filter(f => f !== movieId));
   }
 
   useEffect(() => {
