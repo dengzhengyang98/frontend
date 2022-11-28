@@ -15,9 +15,9 @@ class MoviesDataService {
         return axios.get(`${process.env.REACT_APP_API_BASE_URI}/api/v1/movies/ratings`);
     }
 
-    findById(query) {
+    findById(id) {
         return axios.get(
-            `${process.env.REACT_APP_API_BASE_URI}/api/v1/movies/id/${query}`
+            `${process.env.REACT_APP_API_BASE_URI}/api/v1/movies/id/${id}`
         )
     }
 
